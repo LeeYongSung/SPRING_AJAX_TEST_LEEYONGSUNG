@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시글 수정</title>
+</head>
+<body>
+    <h1>게시글 읽기</h1>
+    <form action="/board/update" method="POST" id="form">
+        <input type="hidden" name="boardNo" th:value="${board.boardNo}">
+        <div>
+            <span>게시글제목 : </span>
+            <input type="text" id="title" name="title" th:value="${board.title}" />
+        </div>
+        <div>
+            <span>작성자 : </span>
+            <input type="text" id="writer" name="writer" th:value="${board.writer}" />
+        </div>
+        <div>
+            <span>등록일자 : </span>
+            <input type="text" th:value="${board.regDate}" readonly />
+        </div>
+        <div>
+            <span>수정일자 : </span>
+            <input type="text" th:value="${board.updDate}" readonly />
+        </div>
+        <div>
+            <span>내용 : </span>
+            <textarea  cols="30" rows="10" id="content" name="content" th:text="${board.content}" ></textarea>
+        </div>
+
+        <div>
+            <button type="button" onclick="onList()">목록</button>
+            <button type="button" onclick="onUpdate()">수정</button>
+            <button type="button" onclick="onDelete()">삭제</button>
+        </div>
+    </form>
+
+    <script>
+        let form = document.getElementById('form');
+        let boardNo = "[[${board.boardNo}]]";
+
+        function onList() {
+            location.href = "/board/list";
+        }
+        function onUpdate() {
+            form.submit();
+        }
+        function onDelete() {
+            let deleteCheck = confirm('삭제하시겠습니까?');
+
+            if(deleteCheck) {
+                form.action = "/board/delete";
+                form.submit();
+            }
+        }
+    </script>
+        
+</body>
+</html>

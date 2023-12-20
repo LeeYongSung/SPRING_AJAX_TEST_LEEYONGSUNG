@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시글 수정</title>
+</head>
+<body>
+    <h1>게시글 읽기</h1>
+    <form action="/board/insert" method="POST" id="form">
+        <div>
+            <span>게시글제목 : </span>
+            <input type="text" id="title" name="title" />
+        </div>
+        <div>
+            <span>작성자 : </span>
+            <input type="text" id="writer" name="writer" />
+        </div>
+        <div>
+            <span>내용 : </span>
+            <textarea  cols="30" rows="10" id="content" name="content"></textarea>
+        </div>
+
+        <div>
+            <button type="button" onclick="onList()">목록</button>
+            <button type="button" onclick="onInsert()">등록</button>
+        </div>
+    </form>
+
+    <script>
+        let form = document.getElementById('form');
+
+        function onList() {
+            location.href = "/board/list";
+        }
+        function onInsert() {
+            form.submit();
+        }
+    </script>
+        
+</body>
+</html>

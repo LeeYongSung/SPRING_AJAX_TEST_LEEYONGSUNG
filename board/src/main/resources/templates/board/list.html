@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시판 목록</title>
+</head>
+<body>
+    <h1>게시판 목록</h1>
+    <a href="/board/insert">게시글 작성</a>
+    <table>
+        <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>등록일자</th>
+            <th>수정일자</th>
+            <th>조회수</th>
+        </tr>
+        <tr id="data_table">
+            <!-- <tr id="data_table"> -->
+            <!-- <th:block th:each="board : ${boardList}">
+                <td th:text="${board.boardNo}"></td>
+                <td>
+                    <a th:href="|/board/read?boardNo=${board.boardNo}" th:text="${board.title}"></a>
+                </td>
+                <td th:text="${board.writer}"></td>
+                <td>
+                    <span th:text="${ #dates.format( board.regDate, 'yyyy-MM-dd HH:mm:ss') }"></span>
+                </td>
+                <td>
+                    <span th:text="${ #dates.format( board.updDate, 'yyyy-MM-dd HH:mm:ss') }"></span>
+                </td>
+                <td th:text="${board.views}"></td>
+            </th:block> -->
+        </tr>
+    </table>
+    <!-- 페이지네이션 -->
+    <div class="pagination">
+        <a href="javascript:;" class="page-arrow" id="first">&laquo;</a>
+        <a href="javascript:;" class="page-arrow" id="prev">&lsaquo;</a>
+
+        <!-- 페이지 번호 목록 -->
+        <div class="page-list">
+            <a href="javascript:;" class="page-no">1</a>
+            <a href="javascript:;" class="page-no">2</a>
+            <a href="javascript:;" class="page-no">3</a>
+            <a href="javascript:;" class="page-no">4</a>
+            <a href="javascript:;" class="page-no">5</a>
+            <a href="javascript:;" class="page-no">6</a>
+            <a href="javascript:;" class="page-no">7</a>
+            <a href="javascript:;" class="page-no">8</a>
+            <a href="javascript:;" class="page-no">9</a>
+            <a href="javascript:;" class="page-no">10</a>
+        </div>
+
+        <a href="javascript:;" class="page-arrow" id="next">&rsaquo;</a>
+        <a href="javascript:;" class="page-arrow" id="last">&raquo;</a>
+    </div>
+
+    <!-- script -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="../js/main.js"></script>
+
+    <script>
+        $(function() {
+
+        
+        // 페이지 관련 변수
+        let page = 1            // 현재 페이지 번호
+        let rows = 10           // 페이지당 게시글 수
+        let pageCount = 10      // 노출 페이지 개수
+        let totalCount = 0      // 전체 게시글 수
+
+
+        // 게시글 목록 요청
+        // getList()
+        getPageList()
+        initPage()
+        // initRows()
+
+
+        // 게시글 목록
+        function getList() {
+            const url = '/board/list'
+
+            $.ajax({
+                url     :   url,
+                type    :   'GET',
+                success : function(response) {
+                    let boardList = response
+                    console.log(boardList)
+
+                    displayList( boardList )
+                },
+                error           : function(request, status, error){
+                    alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                }
+            })
+        }
+
+        
+        // 페이지 번호
+        function initPage() {
+
+            // 페이지 번호 정보
+            let data = {
+                'pageNo'         : page,
+                'rows'           : rows,
+                'pageCount'      : pageCount,
+                'totalCount'     : totalCount,
+            }
+
+            const url = '/board/pagination'
+
+            $.ajax({
+                url         :   url,
+                type        :   'GET',
+                data        :   data,
+                dataType    :   'json',
+                success     :   function(response) {
+                    let pageInfo = response
+                    console.log(response);
+
+                    let start = pageInfo.startPage
+                    let end = pageInfo.endPage
+                    let first = pageInfo.startPage
+                    let last = pageInfo.endPage
+                    let prev = pageInfo.prev
+                    let next = pageInfo.next
+
+                    // 게시글 건 수
+                    let totalCount = pageInfo.totalCount
+                    $('#totalCount').text(totalCount)
+
+                    let pagination = ''
+                    for (let i = start; i <= end ; i++) {
+                        let a = `<a href='javascript:;' class='page-no' data='${i}'>${i}</a>`
+                        pagination += a
+                    }                  
+                    
+                    // 페이지 출력
+                    $('.page-list').html(pagination)
+                    // 화살표 페이지 번호
+                    $('#first').attr('data', start)
+                    $('#last').attr('data', end)
+                    $('#prev').attr('data', prev)
+                    $('#next').attr('data', next)
+
+                    $('.page-no').removeClass('on')
+                    // 현재 페이지 지정
+                    $('.page-no[data=' + page +']').addClass('on')
+
+                    // 화살표 버튼 유효성 처리
+                    $('.page-arrow').show()
+                    if( page == 1 ) {
+                        $('#prev').hide()
+                        $('#first').hide()
+                    }
+                    
+                    if( page == last ) {
+                        $('#next').hide()
+                        $('#next').hide()
+                    }
+
+
+                    // 페이지 번호 클릭 이벤트
+                    $('.page-no, .page-arrow').on('click', function() {
+
+                        // alert('눌림')
+
+                        // 이벤트 제거 - 이벤트 정의가 쌓이는 것을 방지
+                        $('.page-no, .page-arrow').off()
+                        
+                        // 페이지 번호
+                        let clickedPage = $(this).attr('data')
+                        page = clickedPage
+                        initPage()          // 페이지 번호 갱신
+                        getPageList()       // 페이지 목록 갱신
+                    })
+
+
+
+                },
+                error           : function(request, status, error){
+                    console.log("initPage() error")
+                    alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                }
+            })
+
+        }        
+
+        // 게시글 목록 - 페이징
+        function getPageList() {
+            const url = '/board/page'
+
+            let data = {
+                pageNo      : page,
+                rows        : rows,
+                pageCount   : pageCount,
+            }
+
+            $.ajax({
+                url     :   url,
+                type    :   'GET',
+                data    :   data,
+                dataType: 'json',
+                success : function(response) {
+                    let boardList = response
+                    console.log(boardList)
+
+                    console.log("getPageList() success")
+
+                    displayList( boardList )
+                },
+                error           : function(request, status, error){
+                    console.log("getPageList() error")
+                    console.log("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                }
+            })
+        } 
+
+        // 게시글 목록 출력
+        function displayList(boardList) {
+            let $data_table = $('#data_table');
+            $data_table.empty(); // 테이블 초기화
+
+            if(boardList.length == 0) {
+                let msg = '조회된 데이터가 없습니다.';
+                $data_table.append(`<tr><td colspan="6">${msg}</td></tr>`);
+                return;
+            }
+
+            boardList.forEach(function(board) {
+                const regDate = new Date(board.regDate).toISOString().split("T")[0];
+                const updDate = new Date(board.updDate).toISOString().split("T")[0];
+
+                let tr = `
+                    <tr>
+                        <td>${board.boardNo}</td>
+                        <td><a href="/board/read?boardNo=${board.boardNo}">${board.title}</a></td>
+                        <td>${board.writer}</td>
+                        <td>${regDate}</td>
+                        <td>${updDate}</td>
+                        <td>${board.views}</td>
+                    </tr>
+                `;
+                $data_table.append(tr);
+            });
+        }
+
+
+        // 페이지당 게시글 수 - 변경 이벤트
+        $('#rows').on('change', function() {
+            rows = $(this).val()
+            page = 1
+            getPageList()
+            initPage()
+        })
+
+        // 보여줄 게시글 수 갱신
+        function initRows() {
+            $('#rows').val(rows)
+        }
+
+    })
+    </script>
+</body>
+</html>

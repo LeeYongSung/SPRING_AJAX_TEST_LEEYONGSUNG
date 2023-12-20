@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시글 읽기</title>
+</head>
+<body>
+    <h1>게시글 읽기</h1>
+        <div>
+            <span>게시글번호 : </span>
+            <span th:text="${board.boardNo}"></span>
+        </div>
+        <div>
+            <span>게시글제목 : </span>
+            <span th:text="${board.title}"></span>
+        </div>
+        <div>
+            <span>작성자 : </span>
+            <span th:text="${board.writer}"></span>
+        </div>
+        <div>
+            <span>등록일자 : </span>
+            <span th:text="${board.regDate}"></span>
+        </div>
+        <div>
+            <span>수정일자 : </span>
+            <span th:text="${board.updDate}"></span>
+        </div>
+        <div>
+            <span>내용 : </span>
+            <textarea  cols="30" rows="10" th:text="${board.content}" readonly></textarea>
+        </div>
+
+        <div>
+            <button type="button" onclick="onList()">목록</button>
+            <button type="button" onclick="onUpdate()">수정</button>
+            <a th:href="|/board/update?boardNo=${board.boardNo}|">수정</a>
+        </div>
+        <script>
+            let boardNo = "[[${board.boardNo}]]";
+
+            function onList() {
+                location.href = "/board/list";
+            }
+
+            function onUpdate() {
+                location.href = "/board/update?boardNo=" + boardNo;
+            }
+        </script>
+        
+</body>
+</html>
