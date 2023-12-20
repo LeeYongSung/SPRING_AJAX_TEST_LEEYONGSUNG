@@ -15,6 +15,7 @@
 	<typeAliases>
 	    <typeAlias alias="Board"  type="com.joeun.board.dto.Board"/>
 	    <typeAlias alias="Page"  type="com.joeun.board.dto.Page"/>
+	    <typeAlias alias="Comment"  type="com.joeun.board.dto.Comment"/>
       	<!-- <typeAlias alias="Comment" type="com.joeun.board.dto.Comment"/> -->
 
 

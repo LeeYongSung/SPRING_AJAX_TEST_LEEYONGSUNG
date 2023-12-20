@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.joeun.board.dto.Board;
+import com.joeun.board.dto.Comment;
 import com.joeun.board.dto.Page;
 import com.joeun.board.mapper.BoardMapper;
 
@@ -63,6 +64,13 @@ public class BoardServiceImpl implements BoardService {
         int result = boardMapper.pageCount();
 
         return result;
+    }
+
+    @Override
+    public List<Comment> commentList(Comment comment) throws Exception {
+        List<Comment> commentList = boardMapper.commentList(comment);
+
+        return commentList;
     }
     
 }

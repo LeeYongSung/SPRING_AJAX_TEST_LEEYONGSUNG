@@ -61,4 +61,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         SELECT COUNT(*)
         FROM board
     </select>
+
+    <select id="commentList" resultType="Comment">
+        SELECT *
+        FROM comment
+        WHERE board_no = #{boardNo}
+    </select>
 </mapper>

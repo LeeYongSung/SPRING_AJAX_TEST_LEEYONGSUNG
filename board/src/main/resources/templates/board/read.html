@@ -37,9 +37,30 @@
             <button type="button" onclick="onUpdate()">수정</button>
             <a th:href="|/board/update?boardNo=${board.boardNo}|">수정</a>
         </div>
+
+        <form id="comment">
+            <span>작성자</span>
+            <input type="text" id="commentWriter" name="commentWriter">
+            <span>내용</span>
+            <input type="text" id="commentContent" name="commentContent">
+            <button type="button" id="commentBtn">등록</button>
+        </form>
+
+        <div id="comment_box">
+            <span>작성자</span>
+            <p class="comtWriter"></p>
+            <span>작성일자</span>
+            <p class="comtRegDate"></p>
+            <span>내용</span>
+            <p class="comtContent"></p>
+        </div>
+
+        
+        <!-- script -->
+        <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
         <script>
             let boardNo = "[[${board.boardNo}]]";
-
             function onList() {
                 location.href = "/board/list";
             }
@@ -47,6 +68,58 @@
             function onUpdate() {
                 location.href = "/board/update?boardNo=" + boardNo;
             }
+            $(function() {
+
+    
+
+                const url = "/comment/list"
+                const data = {boardNo : boardNo}
+                $.ajax({
+                    url : url,
+                    type : 'GET',
+                    data : data,
+                    dataType : 'json',
+                    success : function(response) {
+                        let commentList = response
+
+                        getComment(commentList)
+
+                        console.log(commentList);
+                    }
+                })
+
+                function getComment(commentList) {
+
+                    let commentBox = $('#comment_box')
+                    commentBox.empty();
+
+                    if(commentList.length == 0) {
+                        let msg = '작성된 댓글이 없습니다.';
+                        commentBox.append(`<p>${msg}</p>`);
+                        return;
+                    }
+
+                    commentList.forEach(function(comment) {
+                        const regDate = new Date(comment.regDate).toISOString().split("T")[0];
+                        const updDate = new Date(comment.updDate).toISOString().split("T")[0];
+
+                        let data = `
+                                <p>${comment.commentNo}</p>
+                                <span>작성자</span>
+                                <p class="comtWriter">${comment.writer}</p>
+                                <span>작성일자</span>
+                                <p class="comtRegDate">${regDate}</p>
+                                <span>내용</span>
+                                <p class="comtContent">${comment.content}</p>
+                        `;
+                        commentBox.append(data);
+                    });
+                }
+
+                
+            })     
+
+
         </script>
         
 </body>

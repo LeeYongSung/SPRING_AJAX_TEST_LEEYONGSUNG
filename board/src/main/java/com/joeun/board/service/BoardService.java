@@ -3,6 +3,7 @@ package com.joeun.board.service;
 import java.util.List;
 
 import com.joeun.board.dto.Board;
+import com.joeun.board.dto.Comment;
 import com.joeun.board.dto.Page;
 
 public interface BoardService {
@@ -27,4 +28,7 @@ public interface BoardService {
 
     // 총 페이지 수
     public int pageCount() throws Exception;
+
+    // 댓글 불러오기
+    public List<Comment> commentList(Comment comment) throws Exception;
 }
