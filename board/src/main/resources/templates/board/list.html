@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>게시판 목록</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 </head>
 <body>
     <h1>게시판 목록</h1>
@@ -16,23 +17,9 @@
             <th>등록일자</th>
             <th>수정일자</th>
             <th>조회수</th>
+            <th>좋아요</th>
         </tr>
         <tr id="data_table">
-            <!-- <tr id="data_table"> -->
-            <!-- <th:block th:each="board : ${boardList}">
-                <td th:text="${board.boardNo}"></td>
-                <td>
-                    <a th:href="|/board/read?boardNo=${board.boardNo}" th:text="${board.title}"></a>
-                </td>
-                <td th:text="${board.writer}"></td>
-                <td>
-                    <span th:text="${ #dates.format( board.regDate, 'yyyy-MM-dd HH:mm:ss') }"></span>
-                </td>
-                <td>
-                    <span th:text="${ #dates.format( board.updDate, 'yyyy-MM-dd HH:mm:ss') }"></span>
-                </td>
-                <td th:text="${board.views}"></td>
-            </th:block> -->
         </tr>
     </table>
     <!-- 페이지네이션 -->
@@ -76,7 +63,6 @@
         // getList()
         getPageList()
         initPage()
-        // initRows()
 
 
         // 게시글 목록
@@ -230,37 +216,61 @@
                 return;
             }
 
+            
+
             boardList.forEach(function(board) {
                 const regDate = new Date(board.regDate).toISOString().split("T")[0];
                 const updDate = new Date(board.updDate).toISOString().split("T")[0];
 
+                let likes = board.likes;
+                let likesTag;
+
+                console.log(board);
+
+                if(likes === 0 ) {
+                    likesTag = `<button type="button" class="likesBtn"><span class="material-symbols-outlined">thumb_up</span></button>${board.likes}`;
+                } else {
+                    likesTag = `<button type="button" class="likesBtn"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24">thumb_up</span></button>${board.likes}`;
+                }
+
                 let tr = `
-                    <tr>
+                    <tr class="boardBlock">
                         <td>${board.boardNo}</td>
                         <td><a href="/board/read?boardNo=${board.boardNo}">${board.title}</a></td>
                         <td>${board.writer}</td>
                         <td>${regDate}</td>
                         <td>${updDate}</td>
                         <td>${board.views}</td>
+                        <input type="hidden" value="${board.boardNo}" >
+                        <td>${likesTag}</td>
                     </tr>
                 `;
                 $data_table.append(tr);
             });
         }
 
+        $(document).on('click', '.likesBtn', function() {
+                let boardBlock = $(this).closest('.boardBlock');
+                let boardNo = boardBlock.find('input').val();
 
-        // 페이지당 게시글 수 - 변경 이벤트
-        $('#rows').on('change', function() {
-            rows = $(this).val()
-            page = 1
-            getPageList()
-            initPage()
-        })
+                let url = "/board/likes"
 
-        // 보여줄 게시글 수 갱신
-        function initRows() {
-            $('#rows').val(rows)
-        }
+                data = {
+                    boardNo : boardNo
+                }
+
+                $.ajax({
+                    url : url,
+                    type : 'get',
+                    data : data,
+                    dataType : 'json',
+                    success : function(response) {
+                        console.log(response);
+                        getPageList()
+                    }
+                })
+                console.log(boardNo);
+            })
 
     })
     </script>

@@ -35,7 +35,7 @@
         <div>
             <button type="button" onclick="onList()">목록</button>
             <button type="button" onclick="onUpdate()">수정</button>
-            <a th:href="|/board/update?boardNo=${board.boardNo}|">수정</a>
+            <!-- <a th:href="|/board/update?boardNo=${board.boardNo}|">수정</a> -->
         </div>
 
         <form id="comment">
@@ -64,29 +64,62 @@
             function onList() {
                 location.href = "/board/list";
             }
-
+            
             function onUpdate() {
                 location.href = "/board/update?boardNo=" + boardNo;
             }
+            
+            // function onCommentDel(commentNo) {
+            //     let CommentDel  = $(commentNo).prev('.comNo').val()
+            //     console.log(CommentDel);
+
+            //     let url = "/comment/delete"
+
+            //     let data = {
+            //         commentNo : CommentDel,
+            //     }
+
+            //     $.ajax({
+            //         url : url,
+            //         type : 'DELETE',
+            //         data : data,
+            //         success : function(response) {
+            //             console.log(response);
+            //             if(response === 'SUCCESS') {
+            //                 alert('SUCCESS');
+
+            //                 location.reload();
+            //             }
+            //         }, error : function(request, status, error) {
+            //             console.log("삭제 중 에러")
+            //             alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+            //         }
+            //     })
+            // }
+
+            
+            
             $(function() {
 
+                getCommentList()
+                
+                function getCommentList() {
+                    const url = "/comment/list"
+                    const data = {boardNo : boardNo}
+                    $.ajax({
+                        url : url,
+                        type : 'GET',
+                        data : data,
+                        dataType : 'json',
+                        success : function(response) {
+                            let commentList = response
     
-
-                const url = "/comment/list"
-                const data = {boardNo : boardNo}
-                $.ajax({
-                    url : url,
-                    type : 'GET',
-                    data : data,
-                    dataType : 'json',
-                    success : function(response) {
-                        let commentList = response
-
-                        getComment(commentList)
-
-                        console.log(commentList);
-                    }
-                })
+                            getComment(commentList)
+    
+                            console.log(commentList)
+                        }
+                    })
+                }
 
                 function getComment(commentList) {
 
@@ -104,19 +137,167 @@
                         const updDate = new Date(comment.updDate).toISOString().split("T")[0];
 
                         let data = `
-                                <p>${comment.commentNo}</p>
-                                <span>작성자</span>
-                                <p class="comtWriter">${comment.writer}</p>
-                                <span>작성일자</span>
-                                <p class="comtRegDate">${regDate}</p>
-                                <span>내용</span>
-                                <p class="comtContent">${comment.content}</p>
+                                <div class="commentBlock">
+                                    <p class"comtNo"">${comment.commentNo}</p>
+                                    <span>작성자</span>
+                                    <p class="comtWriter">${comment.writer}</p>
+                                    <span>작성일자</span>
+                                    <p class="comtRegDate">${regDate}</p>
+                                    <span>내용</span>
+                                    <p class="comtContent">${comment.content}</p>
+                                    <button type="button" class="commentUpdateBtn">수정</button>
+                                    <input type="hidden" class="comNo" value="${comment.commentNo}" />
+                                    <button type="button" class="commentDeleteBtn">삭제</button>
+                                </div>
                         `;
                         commentBox.append(data);
                     });
+
+                    let originalWriter;
+                    let originalContent;
+
+                    $(document).on('click', '.commentUpdateBtn', function() {
+                        let commentBlock = $(this).closest('.commentBlock');
+
+                        originalWriter = commentBlock.find('.comtWriter').text();
+                        let writerInput = `<input type="text" class="comtWriter" value="${originalWriter}" />`;
+                        commentBlock.find('.comtWriter').replaceWith(writerInput);
+
+                        originalContent = commentBlock.find('.comtContent').text();
+                        let contentInput = `<input type="text" class="comtContent" value="${originalContent}" />`;
+                        commentBlock.find('.comtContent').replaceWith(contentInput);
+
+                        let cancelButton = `<button type="button" class="updateCancle">취소</button>`;
+                        commentBlock.find('.commentDeleteBtn').replaceWith(cancelButton);
+
+                        let updateButton = `<button type="button" class="commentUpdate">수정</button>`;
+                        commentBlock.find('.commentUpdateBtn').replaceWith(updateButton);
+                    });
+
+                    $(document).on('click', '.updateCancle', function() {
+                        let commentBlock = $(this).closest('.commentBlock');
+
+                        let writerText = `<p class="comtWriter">${originalWriter}</p>`;
+                        commentBlock.find('input.comtWriter').replaceWith(writerText);
+
+                        let contentText = `<p class="comtContent">${originalContent}</p>`;
+                        commentBlock.find('input.comtContent').replaceWith(contentText);
+
+                        let deleteButton = `<button type="button" class="commentDeleteBtn">삭제</button>`;
+                        commentBlock.find('.updateCancle').replaceWith(deleteButton);
+
+                        let updateButton = `<button type="button" class="commentUpdateBtn">수정</button>`;
+                        commentBlock.find('.commentUpdate').replaceWith(updateButton);
+                    });
+
+                    $(document).on('click', '.commentDeleteBtn', function() {
+                        let CommentDel  = $(this).prev('.comNo').val()
+                        console.log(CommentDel);
+
+                        let url = "/comment/delete"
+
+                        let data = {
+                            commentNo : CommentDel,
+                        }
+
+                        $.ajax({
+                            url : url,
+                            type : 'DELETE',
+                            data : data,
+                            success : function(response) {
+                                console.log(response);
+                                if(response === 'SUCCESS') {
+                                    alert('SUCCESS');
+                                    getCommentList();
+                                }
+                            }, error : function(request, status, error) {
+                                console.log("삭제 중 에러")
+                                alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                            }
+                        })
+                    })
+
+                    $(document).on('click', '.commentUpdate', function() {
+                        let commentBlock = $(this).closest('.commentBlock');
+
+                        let commentNo = $(this).next('input').val();
+                        let writer = commentBlock.find('.comtWriter').val();
+                        let content = commentBlock.find('.comtContent').val();
+
+                        console.log(commentNo);
+                        console.log(writer);
+                        console.log(content);
+
+                        let url = "/comment/update"
+
+                        let data = {
+                            commentNo : commentNo,
+                            writer : writer,
+                            content : content,
+                        }
+
+                        $.ajax({
+                            url : url,
+                            type : 'put',
+                            data : data,
+                            success : function(response) {
+                                if(response === 'SUCCESS') {
+                                    alert('수정이 완료되었습니다.')
+                                    location.reload();
+                                }
+                            },
+                            error : function(request, status, error) {
+                                alert("code:"+request.status+"\n"+"message:"+request.responseText+"\n"+"error:"+error);
+                            } 
+                        })
+                    })
                 }
 
                 
+
+                $('#commentBtn').on('click', function() {
+                    // var formData = $('#comment').serialize(); // 폼데이터로 가져올 때
+
+                    let writer = $('#commentWriter').val()
+                    let content = $('#commentContent').val()
+
+                    console.log(writer)
+                    console.log(content)
+
+                    if(writer == null) {
+                        alert('댓글 작성자를 입력해주세요.')
+                        return
+                    }
+                    if(content == null) {
+                        alert('댓글 내용을 입력해주세요.')
+                        return
+                    }
+
+                    const url = '/comment/insert'
+
+                    let data = {
+                        boardNo : boardNo,
+                        writer : writer,
+                        content : content,
+                    }
+
+
+                    $.ajax({
+                        url : url,
+                        type : 'post',
+                        data : JSON.stringify(data),
+                        contentType : 'application/json',
+                        success : function(response) {
+                            console.log(response);
+
+                            if(response === 'SUCCESS') {
+                                console.log('댓글 등록이 완료되었습니다.')
+                                getCommentList()
+                            }
+                            
+                        }
+                    })
+                })
             })     
 
 

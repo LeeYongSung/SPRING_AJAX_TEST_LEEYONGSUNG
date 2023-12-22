@@ -39,41 +39,53 @@ public class CommentController {
         }
     }
     
-    @GetMapping("/{no}")
-    public ResponseEntity<?> getOne(@PathVariable Integer no) {
+    @PostMapping("/insert")
+    public ResponseEntity<?> commentInsert(@RequestBody Comment comment) {
         try {
-            //TODO Implement Your Logic To Get Data From Service Layer Or Directly From Repository Layer
-            return new ResponseEntity<>("GetOne Result", HttpStatus.OK);
+            int result = boardService.commentInsert(comment);
+            String msg = "";
+            if(result > 0 ) {
+                msg = "SUCCESS";
+            } else {
+                msg = "FAIL";
+            }
+            return new ResponseEntity<>(msg, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     
-    @PostMapping()
-    public ResponseEntity<?> create(@RequestBody Comment comment) {
+    @PutMapping("/update")
+    public ResponseEntity<?> update(Comment comment) {
         try {
-            //TODO Implement Your Logic To Save Data And Return Result Through ResponseEntity
-            return new ResponseEntity<>("Create Result", HttpStatus.OK);
+            String msg = "";
+
+            int result = boardService.commentUpdate(comment);
+
+            if(result > 0) {
+                msg = "SUCCESS";
+            } else {
+                msg = "FAIL";
+            }
+            return new ResponseEntity<>(msg, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     
-    @PutMapping()
-    public ResponseEntity<?> update(@RequestBody Comment comment) {
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> commentDelete(int commentNo) {
         try {
-            //TODO Implement Your Logic To Update Data And Return Result Through ResponseEntity
-            return new ResponseEntity<>("Update Result", HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    
-    @DeleteMapping("/{no}")
-    public ResponseEntity<?> destroy(@PathVariable Integer no) {
-        try {
-            //TODO Implement Your Logic To Destroy Data And Return Result Through ResponseEntity
-            return new ResponseEntity<>("Destroy Result", HttpStatus.OK);
+            String msg = "";
+
+            int result = boardService.commentDelete(commentNo);
+            log.info("result : " + result);
+
+            if(result > 0) {
+                msg = "SUCCESS";
+            }
+
+            return new ResponseEntity<>(msg, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

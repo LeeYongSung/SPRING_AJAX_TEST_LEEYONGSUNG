@@ -72,5 +72,40 @@ public class BoardServiceImpl implements BoardService {
 
         return commentList;
     }
+
+    @Override
+    public int commentInsert(Comment comment) throws Exception {
+        int result = boardMapper.commentInsert(comment);
+
+        return result;
+    }
+
+    @Override
+    public int commentDelete(int commentNo) throws Exception {
+        int result = boardMapper.commentDelete(commentNo);
+
+        return result;
+    }
+
+    @Override
+    public int commentUpdate(Comment comment) throws Exception {
+        int result = boardMapper.commentUpdate(comment);
+
+        return result;
+    }
+
+    @Override
+    public int views(Board board) throws Exception {
+        int result = boardMapper.views(board);
+
+        return result;
+    }
+
+    @Override
+    public int likes(Board board) throws Exception {
+        int result = boardMapper.likes(board);
+
+        return result;
+    }
     
 }

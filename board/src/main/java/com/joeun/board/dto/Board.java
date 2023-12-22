@@ -14,5 +14,7 @@ public class Board {
     private Date regDate;
     private Date updDate;
     private int views;
+    private int likes;
+    private int viewCount;
     
 }

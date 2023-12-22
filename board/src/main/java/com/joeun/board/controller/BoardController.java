@@ -41,7 +41,7 @@ public class BoardController {
     public String list(Model model) throws Exception {
         List<Board> boardList = boardService.list();
 
-        log.info("boardList : " + boardList);
+        // log.info("boardList : " + boardList);
 
         model.addAttribute("boardList", boardList);
 
@@ -58,6 +58,21 @@ public class BoardController {
     @GetMapping("/read")
     public String read(Model model, int boardNo) throws Exception {
         Board board = boardService.select(boardNo);
+
+        int viewCount = 1;
+        int views = board.getViews();
+
+        views += viewCount;
+
+        // log.info("views : " + views);
+        
+        board.setViews(views);
+        
+        // log.info("board : " + board);
+        int result = boardService.views(board);
+
+        // log.info("result : " + result);
+        
 
         model.addAttribute("board", board);
 
@@ -137,32 +152,36 @@ public class BoardController {
     }
 
     /**
-     * 페이지 네이션 처리
+     * 페이지 처리
      */
     @ResponseBody
     @GetMapping("/page")
     public List<Page> pages(Page page) throws Exception {
     // public String pages(Model model, Page page) throws Exception {
 
-        
+        // log.info("page : " + page);
         int totalCount = boardService.pageCount();
 
         int pageNo = page.getPageNo();
         int rows = page.getRows();
 
+
+        
         int firstPage = (pageNo - 1) * rows + 1;
         int lastPage = pageNo * rows;
-        log.info("firstPage : " + firstPage);
-        log.info("lastPage : " + lastPage);
+        // log.info("firstPage : " + firstPage);
+        // log.info("lastPage : " + lastPage);
         
-        log.info("pageCount : " + totalCount);
+        // log.info("pageCount : " + totalCount);
         
         page.setTotalCount(totalCount);
         page.setFirstPage(firstPage);
         page.setLastPage(lastPage);
+
         
-        log.info("page : " + page);
+        // log.info("page : " + page);
         List<Page> boardList = boardService.pages(page);
+        log.info("boardList : " + boardList);
 
         // model.addAttribute("boardList", boardList);
 
@@ -186,10 +205,10 @@ public class BoardController {
 
         int firstPage = (pageNo - 1) * rows + 1;
         int lastPage = pageNo * rows;
-        log.info("firstPage : " + firstPage);
-        log.info("lastPage : " + lastPage);
+        // log.info("firstPage : " + firstPage);
+        // log.info("lastPage : " + lastPage);
         
-        log.info("totalCount : " + totalCount);
+        // log.info("totalCount : " + totalCount);
         
         page.setTotalCount(totalCount);
         page.setFirstPage(firstPage);
@@ -197,18 +216,41 @@ public class BoardController {
 
         double pageCountCheck = (double) totalCount/rows;
 
-        log.info("pageCountCheck : " + pageCountCheck);
+        // log.info("pageCountCheck : " + pageCountCheck);
 
         int pageCount = (int) Math.ceil(pageCountCheck);
 
         page.setPageCount(pageCount);
-        log.info("pageCount : " + pageCount);
+        // log.info("pageCount : " + pageCount);
 
         page.setStartPage(1);
         page.setEndPage(pageCount);
         
         return page;
     }
+
+    @ResponseBody
+    @GetMapping("/likes")
+    public int likes(int boardNo) throws Exception {
+
+        Board board = boardService.select(boardNo);
+
+        // log.info("board1 : " + board);
+        
+        int like = board.getLikes();
+        int likeCount = 1;
+        
+        like += likeCount;
+        // log.info("like : " + like);
+        
+        board.setLikes(like);
+        // log.info("board2 : " + board);
+
+        int result = boardService.likes(board);
+
+        return result;
+    }
+    
     
     
 }

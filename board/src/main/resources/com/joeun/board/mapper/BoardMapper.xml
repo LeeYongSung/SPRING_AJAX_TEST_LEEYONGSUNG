@@ -18,6 +18,20 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         WHERE board_no = #{boardNo}
     </select>
 
+    <!-- 게시글 조회 수 -->
+    <update id="views">
+        UPDATE board
+        SET views = #{views}
+        WHERE board_no = #{boardNo}
+    </update>
+
+    <!-- 게시글 좋아요 수 -->
+    <update id="likes">
+        UPDATE board
+        SET likes = #{likes}
+        WHERE board_no = #{boardNo}
+    </update>
+
     <!-- 게시글 등록 -->
     <insert id="insert">
         INSERT INTO board ( title, writer, content )
@@ -49,7 +63,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="pages" resultType="Page">
         SELECT * FROM (
             SELECT ROW_NUMBER() OVER (ORDER BY board_no DESC) AS no,
-                board_no, title, writer, content, reg_date, upd_date, views
+                board_no, title, writer, content, reg_date, upd_date, views, likes
             FROM board
             ORDER BY board_no DESC
         ) AS numbered_board
@@ -62,9 +76,30 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         FROM board
     </select>
 
+    <!-- 댓글 리스트 -->
     <select id="commentList" resultType="Comment">
         SELECT *
         FROM comment
         WHERE board_no = #{boardNo}
     </select>
+
+    <!-- 댓글 등록 -->
+    <insert id="commentInsert">
+        INSERT INTO comment ( board_no, writer, content )
+        VALUES ( #{boardNo}, #{writer}, #{content} )
+    </insert>
+
+    <!-- 댓글 수정 -->
+    <update id="commentUpdate">
+        UPDATE comment
+        SET writer = #{writer},
+            content = #{content}
+        WHERE comment_no = #{commentNo}
+    </update>
+
+    <!-- 댓글 삭제 -->
+    <delete id="commentDelete">
+        DELETE FROM comment
+        WHERE comment_no = #{commentNo}
+    </delete>
 </mapper>

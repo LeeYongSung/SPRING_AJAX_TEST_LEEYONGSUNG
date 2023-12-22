@@ -14,6 +14,7 @@ public class Page {
     private Date regDate;
     private Date updDate;
     private int views;
+    private int likes;
 
     private int pageNo;
     private int rows;

@@ -16,6 +16,12 @@ public interface BoardMapper {
     // 게시글 조회
     public Board select(int boardNo) throws Exception;
 
+    // 게시글 조회수
+    public int views(Board board) throws Exception;
+
+    // 게시글 좋아요 수
+    public int likes(Board board) throws Exception;
+
     // 게시글 등록
     public int insert(Board board) throws Exception;
 
@@ -33,4 +39,13 @@ public interface BoardMapper {
 
     // 댓글 불러오기
     public List<Comment> commentList(Comment comment) throws Exception;
+
+    // 댓글 등록
+    public int commentInsert(Comment comment) throws Exception;
+    
+    // 댓글 삭제
+    public int commentDelete(int commentNo) throws Exception;
+    
+    // 댓글 수정
+    public int commentUpdate(Comment comment) throws Exception;
 }
