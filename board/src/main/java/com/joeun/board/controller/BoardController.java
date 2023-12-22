@@ -157,9 +157,6 @@ public class BoardController {
     @ResponseBody
     @GetMapping("/page")
     public List<Page> pages(Page page) throws Exception {
-    // public String pages(Model model, Page page) throws Exception {
-
-        // log.info("page : " + page);
         int totalCount = boardService.pageCount();
 
         int pageNo = page.getPageNo();
@@ -169,24 +166,15 @@ public class BoardController {
         
         int firstPage = (pageNo - 1) * rows + 1;
         int lastPage = pageNo * rows;
-        // log.info("firstPage : " + firstPage);
-        // log.info("lastPage : " + lastPage);
-        
-        // log.info("pageCount : " + totalCount);
         
         page.setTotalCount(totalCount);
         page.setFirstPage(firstPage);
         page.setLastPage(lastPage);
 
-        
-        // log.info("page : " + page);
         List<Page> boardList = boardService.pages(page);
         log.info("boardList : " + boardList);
 
-        // model.addAttribute("boardList", boardList);
-
         return boardList;
-        // return "board/list";
     }
 
     /**
@@ -205,10 +193,6 @@ public class BoardController {
 
         int firstPage = (pageNo - 1) * rows + 1;
         int lastPage = pageNo * rows;
-        // log.info("firstPage : " + firstPage);
-        // log.info("lastPage : " + lastPage);
-        
-        // log.info("totalCount : " + totalCount);
         
         page.setTotalCount(totalCount);
         page.setFirstPage(firstPage);
@@ -216,12 +200,9 @@ public class BoardController {
 
         double pageCountCheck = (double) totalCount/rows;
 
-        // log.info("pageCountCheck : " + pageCountCheck);
-
         int pageCount = (int) Math.ceil(pageCountCheck);
 
         page.setPageCount(pageCount);
-        // log.info("pageCount : " + pageCount);
 
         page.setStartPage(1);
         page.setEndPage(pageCount);
